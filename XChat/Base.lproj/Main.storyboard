@@ -10,7 +10,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Home-->
+        <!--XChat-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="Home" customModule="XChat" customModuleProvider="target" sceneMemberID="viewController">
@@ -67,7 +67,10 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
-                    <navigationItem key="navigationItem" id="8HL-Oq-Dbt"/>
+                    <navigationItem key="navigationItem" title="XChat" id="8HL-Oq-Dbt"/>
+                    <connections>
+                        <segue destination="gzB-3g-UxQ" kind="push" identifier="CellToHome" id="xDh-ob-8Ce"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
@@ -114,7 +117,7 @@
                                 <rect key="frame" x="56" y="167" width="262" height="30"/>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="password"/>
                             </textField>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -137,7 +140,9 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="rsR-t4-fFE"/>
                     </view>
-                    <navigationItem key="navigationItem" id="htU-sx-lii"/>
+                    <navigationItem key="navigationItem" title="Login" id="htU-sx-lii">
+                        <barButtonItem key="backBarButtonItem" title="Home" id="WWB-RZ-vG0"/>
+                    </navigationItem>
                     <connections>
                         <outlet property="LaLog" destination="HnG-YR-8Z0" id="Pee-xB-Wyu"/>
                         <outlet property="LaPassWord" destination="ihl-z4-2zQ" id="7L9-hu-Wbf"/>
@@ -149,7 +154,7 @@
             </objects>
             <point key="canvasLocation" x="1680.8" y="-272.11394302848578"/>
         </scene>
-        <!--Chating-->
+        <!--XChat -->
         <scene sceneID="17k-Xa-6W4">
             <objects>
                 <viewController id="gzB-3g-UxQ" customClass="Chating" customModule="XChat" customModuleProvider="target" sceneMemberID="viewController">
@@ -164,7 +169,7 @@
                                         <rect key="frame" x="8" y="10" width="315" height="30"/>
                                         <nil key="textColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits" spellCheckingType="no"/>
+                                        <textInputTraits key="textInputTraits" spellCheckingType="no" smartInsertDeleteType="no"/>
                                     </textField>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Dv-E7-SUR">
                                         <rect key="frame" x="331" y="10" width="36" height="30"/>
@@ -185,6 +190,7 @@
                                     <constraint firstItem="it9-kc-bTD" firstAttribute="top" secondItem="su4-xE-w8k" secondAttribute="top" constant="10" id="1w5-Xh-20E"/>
                                     <constraint firstItem="it9-kc-bTD" firstAttribute="leading" secondItem="su4-xE-w8k" secondAttribute="leading" constant="8" id="C8I-z3-og9"/>
                                     <constraint firstAttribute="trailing" secondItem="4Dv-E7-SUR" secondAttribute="trailing" constant="8" id="PDD-Fj-yj2"/>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="50" id="QR8-tm-CJe"/>
                                     <constraint firstItem="4Dv-E7-SUR" firstAttribute="top" secondItem="su4-xE-w8k" secondAttribute="top" constant="10" id="TIP-lE-VNf"/>
                                     <constraint firstAttribute="height" constant="50" id="TRr-gN-dy7"/>
                                     <constraint firstItem="4Dv-E7-SUR" firstAttribute="leading" secondItem="it9-kc-bTD" secondAttribute="trailing" constant="8" id="Vfs-ZT-zeJ"/>
@@ -221,7 +227,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="PTf-3b-c9m"/>
                     </view>
-                    <navigationItem key="navigationItem" id="jHe-b8-lFr"/>
+                    <navigationItem key="navigationItem" title="XChat " id="jHe-b8-lFr"/>
                     <connections>
                         <outlet property="ChatTyping" destination="it9-kc-bTD" id="BzF-Hd-tVP"/>
                         <outlet property="TableView" destination="D7m-wS-duu" id="MP2-dR-q9O"/>
@@ -293,7 +299,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="HTn-Y1-Wf9"/>
                     </view>
-                    <navigationItem key="navigationItem" id="UuN-lG-Z6v"/>
+                    <navigationItem key="navigationItem" title="Register" id="UuN-lG-Z6v"/>
                     <connections>
                         <outlet property="LaLog" destination="7Ct-ET-436" id="l3V-gK-4Ej"/>
                         <outlet property="LaPassWord" destination="ApP-Bh-Dv0" id="yBP-5V-Hzp"/>
@@ -332,6 +338,7 @@
         <image name="twitter_profile_image" width="800" height="800"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="6Ep-8L-vI3"/>
+        <segue reference="Gbs-h4-rZs"/>
+        <segue reference="LFG-K5-hwu"/>
     </inferredMetricsTieBreakers>
 </document>

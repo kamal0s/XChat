@@ -12,15 +12,16 @@ import Firebase
 
 
 class Chating: UIViewController , UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate{
-   
+    
     
     
     struct chatmessege {
         let text : String
         let senderIS : Bool
         let SenderName : String
+        let Uid : Any
     }
-    
+    var UserID = Auth.auth().currentUser?.uid
     var Array = [chatmessege]()
     
     //MARK:- Set THE OUTLET FROM main.store
@@ -38,7 +39,7 @@ class Chating: UIViewController , UITableViewDelegate,UITableViewDataSource,UITe
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         
@@ -91,9 +92,37 @@ class Chating: UIViewController , UITableViewDelegate,UITableViewDataSource,UITe
         return Array.count
     }
     
-    func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        return self.tableView(tableView, numberOfRowsInSection: indexPath.section) - 1 != indexPath.row
+    
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
     }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == .delete) {
+            
+            if Auth.auth().currentUser?.email == Array[indexPath.row].SenderName{
+                let idOfUser = Array[indexPath.row].Uid as! String
+                
+                let Refrance = Database.database().reference().child("Messaging")
+                
+                Refrance.child(idOfUser).removeValue { (Error, DatabaseReference
+                    ) in
+                    if Error != nil{
+                        print(Error)
+                    }
+                    else{
+                        self.Array.remove(at: indexPath.row)
+                        self.TableView.reloadData()
+                        
+                    }
+                }
+                self.TableView.reloadData()
+            }
+        }
+        
+    }
+    
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
@@ -112,6 +141,7 @@ class Chating: UIViewController , UITableViewDelegate,UITableViewDataSource,UITe
             cell.ChatBackground.translatesAutoresizingMaskIntoConstraints = false
             cell.ChatBackground.layer.cornerRadius = 12
             cell.ChatBackground.sizeToFit()
+            
             return cell
         }
         else {
@@ -122,6 +152,7 @@ class Chating: UIViewController , UITableViewDelegate,UITableViewDataSource,UITe
             cell1.senderView.translatesAutoresizingMaskIntoConstraints = false
             cell1.senderView.layer.cornerRadius = 12
             cell1.senderView.sizeToFit()
+            
             return cell1
         }
     }
@@ -137,23 +168,7 @@ class Chating: UIViewController , UITableViewDelegate,UITableViewDataSource,UITe
         }
     }
     
-    //TODO: Go To TextField to Set hight
     
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        
-        UIView.animate(withDuration: 0.5, animations: {
-            self.heightConstrain.constant = 50
-            self.view.layoutIfNeeded()
-        })
-    }
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        UIView.animate(withDuration: 0.5) {
-            self.heightConstrain.constant = 50
-            self.view.layoutIfNeeded()
-            
-        }
-    }
-
     //MARK:- Send Button When Pressed
     
     @IBAction func SendPressed(_ sender: Any) {
@@ -161,12 +176,15 @@ class Chating: UIViewController , UITableViewDelegate,UITableViewDataSource,UITe
         ChatTyping.autocorrectionType = .no
         // SendButton.isEnabled = false
         ChatTyping.inputAccessoryView = nil
-       
+        
         //MARK:- Send
         
         let messege = Database.database().reference().child("Messaging")
-        let senderInfo = ["Sender":Auth.auth().currentUser?.email,"message":ChatTyping.text!]
-        messege.childByAutoId().setValue(senderInfo) {
+        let msg = messege.childByAutoId()
+        let MsgID = msg.key
+        let senderInfo = ["Sender":Auth.auth().currentUser?.email,"message":ChatTyping.text!,"MessageID":MsgID]
+        
+        msg.setValue(senderInfo) {
             (error,value) in
             if error != nil {
                 print(error!)
@@ -188,16 +206,18 @@ class Chating: UIViewController , UITableViewDelegate,UITableViewDataSource,UITe
             let messege = snapshot.value as! [String:String]
             let text = messege["message"]!
             let SenderID = messege["Sender"]!
+            let MsgUid = messege["MessageID"]!
             if Auth.auth().currentUser?.email == SenderID {
-                self.Array.append(chatmessege(text: text, senderIS: true, SenderName: SenderID))
+                self.Array.append(chatmessege(text: text, senderIS: true, SenderName: SenderID, Uid: MsgUid))
                 self.TableView.reloadData()
                 self.scrollToBottom()
             }
             else {
-                self.Array.append(chatmessege(text: text, senderIS: false, SenderName: SenderID))
+                self.Array.append(chatmessege(text: text, senderIS: false, SenderName: SenderID, Uid:MsgUid))
                 self.TableView.reloadData()
                 self.scrollToBottom()
             }
         }
     }
+    
 }
