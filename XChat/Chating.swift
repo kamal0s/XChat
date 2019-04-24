@@ -20,9 +20,11 @@ class Chating: UIViewController , UITableViewDelegate,UITableViewDataSource,UITe
         let senderIS : Bool
         let SenderName : String
         let Uid : Any
+        let name : String
     }
     var UserID = Auth.auth().currentUser?.uid
     var Array = [chatmessege]()
+    var usr : String = ""
     
     //MARK:- Set THE OUTLET FROM main.store
     
@@ -39,7 +41,10 @@ class Chating: UIViewController , UITableViewDelegate,UITableViewDataSource,UITe
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        //        Array.append(chatmessege(text: "Welcome TO XChat", senderIS: true, SenderName: "XChat Admin", Uid: ""))
+        //        Array.append(chatmessege(text: "When you Login you you have accepted the license agreements", senderIS: true, SenderName: "XChat Admin", Uid: ""))
+        //        Array.append(chatmessege(text: "We Hop you will be Enjoyed With US ", senderIS: true, SenderName: "XChat Admin", Uid: ""))
+        //
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         
@@ -131,11 +136,15 @@ class Chating: UIViewController , UITableViewDelegate,UITableViewDataSource,UITe
         let cell1 = tableView.dequeueReusableCell(withIdentifier: "SenderCell", for: indexPath) as! TVCellSender
         TableView.separatorStyle = .none
         
-        var SenderNameSet = chatmessege.SenderName.split(separator: "@")
+        var SenderNameSet = chatmessege.SenderName.split(separator: ".")
+        
         if chatmessege.senderIS == false {
             let cell = cell0
             cell.MessegingLabel.text = chatmessege.text
-            cell.UsernameLabel.text = "\(SenderNameSet[0])"
+            //GetUserName(name: chatmessege.SenderName)
+            cell.UsernameLabel.text = chatmessege.name
+            
+            
             cell.AvatarImage.image = UIImage(named: "125")
             cell.MessegingLabel.numberOfLines = 0
             cell.ChatBackground.translatesAutoresizingMaskIntoConstraints = false
@@ -147,7 +156,10 @@ class Chating: UIViewController , UITableViewDelegate,UITableViewDataSource,UITe
         else {
             cell1.senderMessege.text = chatmessege.text
             cell1.imageAvatarRight.image = UIImage(named: "124")
-            cell1.SenderName.text = "\(SenderNameSet[0])"
+            //GetUserName(name: chatmessege.SenderName)
+            print(self.usr)
+            cell1.SenderName.text = chatmessege.name
+            
             cell1.senderMessege.numberOfLines = 0
             cell1.senderView.translatesAutoresizingMaskIntoConstraints = false
             cell1.senderView.layer.cornerRadius = 12
@@ -165,6 +177,8 @@ class Chating: UIViewController , UITableViewDelegate,UITableViewDataSource,UITe
         DispatchQueue.main.async {
             let indexPath = IndexPath(row: self.Array.count-1, section: 0)
             self.TableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+            
+            
         }
     }
     
@@ -182,7 +196,11 @@ class Chating: UIViewController , UITableViewDelegate,UITableViewDataSource,UITe
         let messege = Database.database().reference().child("Messaging")
         let msg = messege.childByAutoId()
         let MsgID = msg.key
-        let senderInfo = ["Sender":Auth.auth().currentUser?.email,"message":ChatTyping.text!,"MessageID":MsgID]
+        let sendar = Auth.auth().currentUser?.email?.split(separator: ".")
+        let CurrectSender = sendar![0]
+        
+        GetUserName(name: String(CurrectSender))
+        let senderInfo = ["Sender":Auth.auth().currentUser?.email,"message":ChatTyping.text!,"MessageID":MsgID,"nameOfUser":self.usr]
         
         msg.setValue(senderInfo) {
             (error,value) in
@@ -207,17 +225,54 @@ class Chating: UIViewController , UITableViewDelegate,UITableViewDataSource,UITe
             let text = messege["message"]!
             let SenderID = messege["Sender"]!
             let MsgUid = messege["MessageID"]!
+            let Uname = messege["nameOfUser"]!
             if Auth.auth().currentUser?.email == SenderID {
-                self.Array.append(chatmessege(text: text, senderIS: true, SenderName: SenderID, Uid: MsgUid))
+                self.Array.append(chatmessege(text: text, senderIS: true, SenderName: SenderID, Uid: MsgUid, name: Uname))
                 self.TableView.reloadData()
+                
                 self.scrollToBottom()
+                
+                
             }
             else {
-                self.Array.append(chatmessege(text: text, senderIS: false, SenderName: SenderID, Uid:MsgUid))
+                self.Array.append(chatmessege(text: text, senderIS: false, SenderName: SenderID, Uid:MsgUid, name: Uname))
                 self.TableView.reloadData()
+                
                 self.scrollToBottom()
+                
             }
         }
+    }
+    
+    func GetUserName(name : String) {
+        
+        var SenderNameSet = name.split(separator: ".")
+        let SenderN = SenderNameSet[0]
+        
+        let Ref = Database.database().reference()
+        Ref.child("Users").observe(.value) {(snapshot) in
+            for users in snapshot.children {
+                
+                let user = users as! DataSnapshot
+                let usr1 = user.value as! [String:Any]
+                if usr1["\(SenderN)"] != nil {
+                    
+                    let us = usr1["\(SenderN)"] as! [String:Any]
+                    let ur = us["Name"] as! String
+                    
+                    self.usr = ur
+                    
+                    break
+                }
+                
+            }
+          
+        }
+        
+        //
+        
+       
+        
     }
     
 }
